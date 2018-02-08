@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="new/js/fabric.js"></script>
+    <script src="new/js/angular.min.js"></script>
+    <title></title>
+  </head>
+  <style media="screen">
+    .jumbotron{ padding: 5px;}
+
+  </style>
+  <body>
+    <div class="container-fluid">
+      <div class="jumbotron">
+        <h2 class="text-center" >Canvas Tutor App</h2>
+      </div>
+    </div>
+    <div class="container-fluid">
+        <div class="row">
+
+          <div class="col-xs-2">
+              <button type="button" class="btn btn-primary" name="button" onclick="Pen();" > Pen </button>
+              <br> <br>
+
+              <input type="color" value="#E6E6FA" id="colorchange" onchange="SetColor();"> <br> <br>
+              <div class="dropdown">
+                  <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">Shapes
+                    <span class="caret"></span></button>
+                    <ul class="dropdown-menu">
+                    <!--  <li><a onclick="Pen()" >freeDraw</a></li> -->
+                      <li><a onclick="Circle()">Circle</a></li>
+                      <li><a onclick="Rectangle()">Rectangle</a></li>
+                      <li><a onclick="Triangle()">Triangle</a></li>
+                    </ul>
+                </div>
+
+          </div>
+
+          <div class="col-xs-8">
+              <canvas id="canvas" width="800" height="400" style="border:1px solid;" ></canvas>
+          </div>
+
+
+        </div>
+    </div>
+
+    <script>
+
+     var color = 'lavender';
+     // var mode;
+
+     canvas = document.getElementById("canvas");
+     context = canvas.getContext('2d');
+     var rect = canvas.getBoundingClientRect();
+
+     function SetColor()
+      {
+        color = document.getElementById("colorchange").value;
+      }
+
+     function SetMode(mode)
+      {
+
+          if(mode=="cir")
+          {
+            Circle();
+          }
+          else if(mode=="rec")
+           {
+             Rectangle();
+          }
+          else
+          {
+            Triangle();
+          }
+      }
+
+        function Circle()
+         {
+           var tempX;
+           var tempY;
+           var radius;
+           var draw = false;
+           var circleCount=0;
+           var circles = [];
+
+                canvas.addEventListener('mousedown', function(){
+                 draw = true ;
+                 tempX = event.clientX - rect.left;
+                 tempY = event.clientY - rect.top;
+               });
+
+              canvas.addEventListener('mousemove', function(){
+                  radius = ( event.clientX - rect.left - tempX)/2 ;
+                  if(radius<0)
+                  {
+                    radius = -radius;
+                  }
+                  if(draw==true)
+                  {
+                    drawCircle(tempX,tempY,radius);
+                  }
+               });
+
+               canvas.addEventListener('mouseup', function() {
+                 draw = false;
+                 circleCount=circleCount+1;
+                 var tempCircle = {x:tempX, y:tempY, rad:radius, col:color};
+                 circles.push(tempCircle);
+                 console.log(circles);
+               });
+
+           function drawCircle(tempX,tempY,radius)
+            {
+               context.beginPath();
+               context.arc(tempX,tempY, radius, 0, 2 * Math.PI, false);
+               context.closePath();
+               context.fillStyle = color;
+               context.fill();
+               context.strokeStyle=color;
+               context.stroke();
+           }
+    }
+
+    function Rectangle()
+     {
+       var tempX;
+       var tempY;
+       var tempH;
+       var tempW;
+       var draw = false;
+       var Count=0;
+       var rectangles = [];
+
+       canvas.addEventListener('mousedown', function(){
+           draw = true ;
+           tempX = event.clientX - rect.left;
+           tempY =  event.clientY - rect.top;
+       },false);
+
+       canvas.addEventListener('mousemove', function(){
+           tempW = event.clientX - rect.left - tempX;
+           tempH = event.clientY - rect.top - tempY;
+           if(draw==true)
+           {
+             drawRectangle(tempX,tempY,tempW,tempH);
+           }
+        },false);
+
+        canvas.addEventListener('mouseup', function() {
+          draw = false;
+          Count=Count+1;
+          var tempRectangle = {x:tempX, y:tempY, w:tempW , h:tempH, col:color};
+          rectangles.push(tempRectangle);
+          console.log(rectangles);
+        },false);
+
+        function drawRectangle(tempX,tempY,tempW,tempH)
+        {
+          context.beginPath();
+          context.rect(tempX,tempY,tempW,tempH);
+          context.closePath();
+          context.strokeStyle = color;
+          context.fillStyle =color;
+          context.fill();
+          context.stroke();
+        }
+    }
+
+    function Triangle()
+     {
+       var tempX;
+       var tempY;
+       var tempX1;
+       var tempY1;
+       var tempB; //base
+       var draw = false;
+       var Count=0;
+       var triangles = [];
+
+       canvas.addEventListener('mousedown', function(){
+           draw = true ;
+           tempX = event.clientX - rect.left;
+           tempY =  event.clientY - rect.top;
+           console.log(tempX+" "+tempY);
+       },false);
+
+       canvas.addEventListener('mousemove', function(){
+         tempX1 = event.clientX - rect.left;
+         tempY1 =  event.clientY - rect.top;
+           if(draw==true)
+           {
+             drawTriangle(tempX,tempY,tempX1,tempY1);
+           }
+        },false);
+
+        canvas.addEventListener('mouseup', function() {
+          draw = false;
+          Count=Count+1;
+          var tempTriangle = {x:tempX, y:tempY, x1:tempX1, y1:tempY1, b:tempB, col:color};
+          triangles.push(tempTriangle);
+          console.log(triangles);
+        },false);
+
+        function drawTriangle(tempX,tempY,tempX1,tempY1)
+        {
+           context.beginPath();
+           context.moveTo(tempX, tempY);
+           context.lineTo(tempX1,tempY1);
+           tempB = tempX-(tempX1-tempX);
+           context.lineTo(tempB,tempY1);
+           context.lineTo(tempX, tempY);
+           context.fillStyle = color;
+           context.fill();
+           context.stroke();
+           //context.closePath();
+           //context.strokeStyle = color;
+        }
+    }
+
+    function Pen()
+    {
+      var draw;
+      var tempX;
+      var tempY;
+      var Lines = [];
+
+    		context.lineWidth =5;
+    	   draw =false;
+
+    		canvas.addEventListener('mousedown',function () {
+    			draw = true;
+          tempX = event.clientX - rect.left;
+          tempY = event.clientY - rect.top;
+    			context.beginPath();
+    			context.moveTo(tempX,tempY);
+    		});
+
+        canvas.addEventListener('mousemove', pencilDraw);
+
+    		canvas.addEventListener('mouseup',function(){draw=false;});
+
+    		function pencilDraw(event)
+    		{
+    			tempX = event.clientX - rect.left;
+    			tempY = event.clientY - rect.top;
+
+    			if(draw==true)
+    			{
+    				context.lineTo(tempX,tempY);
+            context.strokeStyle = color;
+    				context.stroke();
+    			}
+
+        }
+    }
+
+    </script>
+  </body>
+</html>
