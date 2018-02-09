@@ -24,7 +24,7 @@
 
           <div class="col-xs-2">
               <button type="button" class="btn btn-primary" name="button" onclick="Pen();" > Pen </button> <br> <br>
-                <button type="button" class="btn btn-primary" name="button" onclick="Eraser();" > Eraser </button> <br> <br>
+                <button type="button" class="btn btn-primary" name="button" onclick="Clear();" > Clear </button> <br> <br>
               <input type="range" name="points" id="sizechange" min="1" max="20" value="1" onchange="SetSize();"> <br>
               <input type="color" value="#000000" id="colorchange" onchange="SetColor();"> <br> <br>
               <div class="dropdown">
@@ -54,6 +54,9 @@
         var color='#000000';
         var size = 1;
         var rect, cir, tri, isDown, origX, origY;
+        var rectangles = [];
+        var circles = [];
+        var triangles = [];
         var canvas = new fabric.Canvas('canvas');
         canvas.freeDrawingBrush.color = color;
         canvas.selection = false;
@@ -84,18 +87,13 @@
            canvas.off('mouse:down');
            canvas.off('mouse:move');
            canvas.off('mouse:up');
-            canvas.freeDrawingBrush.width = size;
-            canvas.isDrawingMode = true;
-            canvas.freeDrawingBrush.color = color;
-         }
-         function Eraser()
-         {
-           canvas.off('mouse:down');
-           canvas.off('mouse:move');
-           canvas.off('mouse:up');
            canvas.freeDrawingBrush.width = size;
            canvas.isDrawingMode = true;
-           canvas.freeDrawingBrush.color = 'white';
+           canvas.freeDrawingBrush.color = color;
+         }
+         function Clear()
+         {
+           canvas.clear();
          }
 
          function Shapes(s)
@@ -192,7 +190,6 @@
                   }
 
 
-
                     //Triangle
                   if(s=="triangle")
                   {
@@ -213,9 +210,27 @@
               }); // end of mousemove
 
               canvas.on('mouse:up', function(o){
-                isDown = false;
-              });
+                  if(s=="rectangle")
+                  {
+                    var tempRectangle = {x:rect.top, y:rect.left, w:rect.width , h:rect.height, col:color};
+                    rectangles.push(tempRectangle);
+                    console.log(rectangles);
+                  }
+                  if(s=="circle")
+                  {
+                    var tempCircle = {x:cir.top, y:cir.left, r:cir.radius , col:color};
+                    circles.push(tempCircle);
+                    console.log(circles);
+                  }
+                  if(s=="triangle")
+                  {
+                    var tempTriangle = {x:tri.top, y:tri.left, w:tri.width , h:tri.height, col:color};
+                    triangles.push(tempTriangle);
+                    console.log(triangles);
+                  }
 
+                  isDown = false;
+              });
 
         } //end of Shape()
 
