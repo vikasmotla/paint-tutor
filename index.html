@@ -24,6 +24,7 @@
 
           <div class="col-xs-2">
               <button type="button" class="btn btn-primary" name="button" onclick="Pen();" > Pen </button> <br> <br>
+                <button type="button" class="btn btn-primary" name="button" onclick="Eraser();" > Eraser </button> <br> <br>
               <input type="range" name="points" id="sizechange" min="1" max="20" value="1" onchange="SetSize();"> <br>
               <input type="color" value="#000000" id="colorchange" onchange="SetColor();"> <br> <br>
               <div class="dropdown">
@@ -31,9 +32,9 @@
                     <span class="caret"></span></button>
                     <ul class="dropdown-menu">
                     <!--  <li><a onclick="Pen()" >freeDraw</a></li> -->
-                      <li><a onclick="Circle()">Circle</a></li>
-                      <li><a onclick="Rectangle()">Rectangle</a></li>
-                      <li><a onclick="Triangle()">Triangle</a></li>
+                      <li><a onclick="Shapes('rectangle');">Rectangle</a></li>
+                      <li><a onclick="Shapes('circle');">Circle</a></li>
+                      <li><a onclick="Shapes('triangle');">Triangle</a></li>
                     </ul>
                 </div>
                 <br>
@@ -49,179 +50,176 @@
     </div>
 
     <script>
-      var color='#000000';
-      var size = 1;
-      var rect, circle, triangle, isDown, origX, origY;
-      var canvas = new fabric.Canvas('canvas');
-      canvas.freeDrawingBrush.color = color;
 
-      function SetColor()
-       {
-         color = document.getElementById("colorchange").value;
-         canvas.freeDrawingBrush.color = color;
-       }
+        var color='#000000';
+        var size = 1;
+        var rect, cir, tri, isDown, origX, origY;
+        var canvas = new fabric.Canvas('canvas');
+        canvas.freeDrawingBrush.color = color;
+        canvas.selection = false;
 
-       function SetSize()
-      {
-          size = document.getElementById("sizechange").value;
-          canvas.freeDrawingBrush.width = size;
-       }
+        function SetColor()
+         {
+           color = document.getElementById("colorchange").value;
+           canvas.freeDrawingBrush.color = color;
+         }
 
-      function Rectangle()
-       {
-          canvas.isDrawingMode = false;
-          canvas.selection = false;
-          canvas.on('mouse:down', function(o){
-           isDown = true;
-           var pointer = canvas.getPointer(o.e);
-           origX = pointer.x;
-           origY = pointer.y;
-           var pointer = canvas.getPointer(o.e);
-            rect = new fabric.Rect({
-              left: origX,
-              top: origY,
-              originX: 'left',
-              originY: 'top',
-              width: pointer.x-origX,
-              height: pointer.y-origY,
-              fill:'',
-              strokeWidth:3,
-              stroke:color
-              //transparentCorners: false
-           });
-           canvas.add(rect);
-         });
+         function SetSize()
+         {
+            size = document.getElementById("sizechange").value;
+            canvas.freeDrawingBrush.width = size;
+         }
 
-         canvas.on('mouse:move', function(o){
-           if (!isDown) return;
-           var pointer = canvas.getPointer(o.e);
-
-           if(origX>pointer.x){
-             rect.set({ left: Math.abs(pointer.x) });
-           }
-           if(origY>pointer.y){
-             rect.set({ top: Math.abs(pointer.y) });
-           }
-
-           rect.set({ width: Math.abs(origX - pointer.x) });
-           rect.set({ height: Math.abs(origY - pointer.y) });
-
-
-           canvas.renderAll();
-         });
-
-         canvas.on('mouse:up', function(o){
-           isDown = false;
-          });
-       }
-
-
-       function Circle() {
-         canvas.isDrawingMode = false;
-         canvas.selection = false;
-         canvas.on('mouse:down', function(o){
-          isDown = true;
-          var pointer = canvas.getPointer(o.e);
-          origX = pointer.x;
-          origY = pointer.y;
-          var pointer = canvas.getPointer(o.e);
-           circle = new fabric.Circle({
-             left: origX,
-             top: origY,
-             originX: 'left',
-             originY: 'top',
-             radius: (pointer.x-origX)/2,
-             fill:'',
-             strokeWidth:3,
-             stroke:color
-             //transparentCorners: false
-          });
-          canvas.add(circle);
-        });
-
-        canvas.on('mouse:move', function(o){
-          if (!isDown) return;
-          var pointer = canvas.getPointer(o.e);
-
-          if(origX>pointer.x){ //when drag upside
-            circle.set({ left: Math.abs(pointer.x) });
-          }
-          if(origY>pointer.y){
-            circle.set({ top: Math.abs(pointer.y) });
-          }
-
-          circle.set({ radius: Math.abs(origX - pointer.x)/2 });
-
-          canvas.renderAll();
-        });
-
-        canvas.on('mouse:up', function(o){
-          isDown = false;
-         });
-       }
-
-       function Triangle()
-        {
+         function Move()
+          {
             canvas.isDrawingMode = false;
-            canvas.selection = false;
-            canvas.on('mouse:down', function(o){
-                isDown = true;
-                var pointer = canvas.getPointer(o.e);
-                origX = pointer.x;
-                origY = pointer.y;
-                var pointer = canvas.getPointer(o.e);
+            canvas.selection = true;
+            canvas.off('mouse:down');
+            canvas.off('mouse:move');
+            canvas.off('mouse:up');
+         }
 
-                 triangle = new fabric.Triangle({
+         function Pen()
+         {
+           canvas.off('mouse:down');
+           canvas.off('mouse:move');
+           canvas.off('mouse:up');
+            canvas.freeDrawingBrush.width = size;
+            canvas.isDrawingMode = true;
+            canvas.freeDrawingBrush.color = color;
+         }
+         function Eraser()
+         {
+           canvas.off('mouse:down');
+           canvas.off('mouse:move');
+           canvas.off('mouse:up');
+           canvas.freeDrawingBrush.width = size;
+           canvas.isDrawingMode = true;
+           canvas.freeDrawingBrush.color = 'white';
+         }
+
+         function Shapes(s)
+         {
+              canvas.isDrawingMode = false;
+              canvas.selection = false;
+              canvas.on('mouse:down', function(o){ // start mouse down fun
+              isDown = true;
+              var pointer = canvas.getPointer(o.e);
+              origX = pointer.x;
+              origY = pointer.y;
+              var pointer = canvas.getPointer(o.e);
+
+              if(s=="rectangle")
+              {
+                  rect = new fabric.Rect({
+                  left: origX,
+                  top: origY,
+                  originX: 'left',
+                  originY: 'top',
+                  width: pointer.x-origX,
+                  height: pointer.y-origY,
+                  fill:'',
+                  strokeWidth:3,
+                  stroke:color   });
+
+                  canvas.add(rect);
+
+              }
+
+              else if (s=="circle")
+               {
+                  cir = new fabric.Circle({
+                  left: origX,
+                  top: origY,
+                  originX: 'left',
+                  originY: 'top',
+                  radius: (pointer.x-origX)/2,
+                  fill:'',
+                  strokeWidth:3,
+                  stroke:color   });
+
+                  canvas.add(cir);
+
+               }
+
+              else if (s=="triangle")
+               {
+                  tri = new fabric.Triangle({
                   left: origX,
                   top: origY,
                   originX: 'left',
                   originY: 'top',
                   fill:'',
                   strokeWidth:3,
-                  stroke:color
-                });
-                canvas.add(triangle);
+                  stroke:color });
 
-            });
+                  canvas.add(tri);
 
-            canvas.on('mouse:move', function(o){
-                if (!isDown) return;
-                var pointer = canvas.getPointer(o.e);
+               }
 
-                if(origX>pointer.x){
-                  triangle.set({ left: Math.abs(pointer.x) });
-                }
-                if(origY>pointer.y){
-                  triangle.set({ top: Math.abs(pointer.y) });
-                }
+            }); // end of mousedown fun
 
-                triangle.set({ width: Math.abs(origX - pointer.x) });
-                triangle.set({ height: Math.abs(origY - pointer.y) });
-                canvas.renderAll();
-            });
-
-            canvas.on('mouse:up', function(o){
-              isDown = false;
-             });
-
-        }
+              canvas.on('mouse:move', function(o){ // mousemove fun
+                  if (!isDown) return;
+                  var pointer = canvas.getPointer(o.e);
 
 
-       function Move()
-        {
-          canvas.isDrawingMode = false;
-          canvas.selection = true;
-          canvas.off('mouse:down');
-          canvas.off('mouse:move');
-          canvas.off('mouse:up');
-       }
+                  //rectangle
+                  if(s=="rectangle")
+                  {
+                      if(origX>pointer.x){
+                        rect.set({ left: Math.abs(pointer.x) });
+                      }
+                      if(origY>pointer.y){
+                        rect.set({ top: Math.abs(pointer.y) });
+                      }
 
-       function Pen()
-      {
-          canvas.freeDrawingBrush.width = size;
-          canvas.isDrawingMode = true;
-       }
+                      rect.set({ width: Math.abs(origX - pointer.x) });
+                      rect.set({ height: Math.abs(origY - pointer.y) });
+                  }
 
-    </script>
-  </body>
-</html>
+
+                  //Circle
+                  if(s=="circle")
+                  {
+                    if(origX>pointer.x){ //when drag is towards left
+                      cir.set({ left: Math.abs(pointer.x) });
+                    }
+                    if(origY>pointer.y){ //when drag is towards top
+                      cir.set({ top: Math.abs(pointer.y) });
+                    }
+                    cir.set({ radius: Math.abs(origX - pointer.x)/2 });
+                  }
+
+
+
+                    //Triangle
+                  if(s=="triangle")
+                  {
+                    if(origX>pointer.x){
+                      tri.set({ left: Math.abs(pointer.x) });
+                    }
+                    if(origY>pointer.y){
+                      tri.set({ top: Math.abs(pointer.y) });
+                    }
+
+                    tri.set({ width: Math.abs(origX - pointer.x) });
+                    tri.set({ height: Math.abs(origY - pointer.y) });
+                  }
+
+
+                  canvas.renderAll();
+
+              }); // end of mousemove
+
+              canvas.on('mouse:up', function(o){
+                isDown = false;
+              });
+
+
+        } //end of Shape()
+
+
+       </script>
+     </body>
+   </html>
