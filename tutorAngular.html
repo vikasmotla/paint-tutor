@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html ng-app="myApp" >
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="New/js/fabric.js"></script>
+    <script src="New/js/angular.min.js"></script>
+    <script src="tutor.js" ></script>
+
+    <title></title>
+  </head>
+  <style>
+    .jumbotron{ padding: 5px;}
+
+  </style>
+
+  <body ng-controller="myCtrl">
+    <div class="container-fluid">
+      <div class="jumbotron">
+        <h2 class="text-center">Canvas App</h2>
+      </div>
+    </div>
+    <div class="container-fluid">
+        <div class="row">
+
+          <div class="col-xs-2">
+              <button type="button" class="btn btn-primary" ng-click="canvas.isDrawingMode=true; mode=null;" > Pen </button> <br> <br>
+              <input type="range"  min="1" max="20" ng-model="size" ng-change="SetPen()"> <br>
+              <input type="color" ng-model="col" ng-change="canvas.freeDrawingBrush.color=col;" > <br> <br>
+              <div class="dropdown">
+                  <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown" ng-click="canvas.isDrawingMode = false; isDown = true;" >Shapes
+                    <span class="caret"></span></button>
+                    <ul class="dropdown-menu">
+                      <li><a  ng-click="mode = 'rec'">Rectangle</a></li>
+                      <li><a ng-click="mode = 'cir'">Circle</a></li>
+                      <li><a ng-click="mode = 'tri'">Triangle</a></li>
+                    </ul>
+                </div>
+                <br>
+            <button type="button" class="btn btn-primary" ng-click="Move()"> Move </button> <br> <br>
+            <button type="button" class="btn btn-primary" ng-click="ClearAll()" > Clear All </button> <br> <br>
+
+          </div>
+
+          <div class="col-xs-8">
+              <canvas id="canvas" width="800" height="400" style="border:1px solid;" ></canvas>
+          </div>
+
+        </div>
+    </div>
+  </body>
